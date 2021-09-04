@@ -23,14 +23,19 @@ namespace Tg_Bot
 
         Server.Server server;
 
+        private SelectedLang selectedLang;
+
         public KNT_HelperBot()
         {
 
             Token = File.ReadLines(FileName.Token).First();
-            
+
             client = new TelegramBotClient(Token);
 
             server = new Server.Server();
+
+            selectedLang = new SelectedLang();
+            selectedLang.SetLang(FileName.ENfile);
 
         }
 
@@ -49,8 +54,8 @@ namespace Tg_Bot
             }
             server.TurnOnAsync();
 
-            var sMsg = new ScheduledMsg();
-            sMsg.SenderAllNewUsers(new DateTime(2021, 08, 31, 06, 10, 00), client, "Извините за неудобства в алгоритме был баг, который сейчас устранен, пожалуйста перезапустите бота и пользуйтесь");
+            //var sMsg = new ScheduledMsg();
+            //sMsg.SenderAllNewUsers(new DateTime(2021, 08, 31, 06, 10, 00), client, "Извините за неудобства в алгоритме был баг, который сейчас устранен, пожалуйста перезапустите бота и пользуйтесь");
         }
 
         [Obsolete]
@@ -109,18 +114,18 @@ namespace Tg_Bot
                 if (!userInBlackList)
                 {
                     //if (!TelegramClientCheck.IsAdmins(msg.From)){
-                        //DateTime release = new DateTime(2021, 08, 31, 05, 30, 00);
-                        //release = release.ToUniversalTime();
+                    //DateTime release = new DateTime(2021, 08, 31, 05, 30, 00);
+                    //release = release.ToUniversalTime();
 
-                        //if (DateTime.Now.ToUniversalTime() < release)
-                        //{
-                        //    TimeSpan date = release.Subtract(DateTime.Now.ToUniversalTime());
+                    //if (DateTime.Now.ToUniversalTime() < release)
+                    //{
+                    //    TimeSpan date = release.Subtract(DateTime.Now.ToUniversalTime());
 
-                        //    TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, msg.Text);
+                    //    TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, msg.Text);
 
-                        //    await client.SendTextMessageAsync(msg.Chat.Id, $"До релиза бота осталось: {date.Days} д. {date.Hours} ч. {date.Minutes} м.");
-                        //    return;
-                        //}
+                    //    await client.SendTextMessageAsync(msg.Chat.Id, $"До релиза бота осталось: {date.Days} д. {date.Hours} ч. {date.Minutes} м.");
+                    //    return;
+                    //}
                     //}
 
                     if (msg.Text == "/start")
@@ -133,127 +138,127 @@ namespace Tg_Bot
                             TelegramBotLogger.PrintBanInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, msg.Text);
                             goto EndOfListenOfMsg;
                         }
+                        //выбор языка
+                        /*await client.SendTextMessageAsync(msg.Chat.Id, "Выберите язык: | Оберіть мову: | Choose the language:", replyMarkup: new ButtonGenerator().GetLangKeyBoardButtons());
+                        switch (msg.Text)
+                        {
+                            case "🇺🇦Украинский!🇺🇦":
+                                selectedLang.SetLang(FileName.UAfile);
+                                break;
+                            case "🇷🇺Русский!🇷🇺":
+                                selectedLang.SetLang(FileName.RUfile);
+                                break;
+                            case "🇬🇧Английский!🇬🇧":
+                                selectedLang.SetLang(FileName.ENfile);
+                                break;
+                            default:
+                                break;
+                        }*/
+                        await client.SendTextMessageAsync(msg.Chat.Id, File.ReadAllText(FileName.MainDir + selectedLang.WelcomeFile), replyMarkup: new ButtonGenerator().GetKeyBoardButtons(ref selectedLang));
 
-                            await client.SendTextMessageAsync(msg.Chat.Id, File.ReadAllText(FileName.Welcome_text), replyMarkup: new ButtonGenerator().GetKeyBoardButtons());
 
-                        
                     }
 
-                    switch (msg.Text)
+                    /*
+
+                     Расписание:
+                          - Числитель:
+                                * Выбор дня недели:
+                                     - Пн - Вт - Ср - Чт - Пт
+
+                          - Знаменатель
+                                * Выбор дня недели:
+                                     - Пн - Вт - Ср - Чт - Пт
+
+                          - Звонки      ->      Текст расписания звонков
+
+                     */
+
+                    else if (msg.Text == selectedLang.TimetableBtn)
                     {
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.TimeTable.ToString());
 
-                        /*
-
-                         Расписание:
-                              - Числитель:
-                                    * Выбор дня недели:
-                                         - Пн - Вт - Ср - Чт - Пт
-
-                              - Знаменатель
-                                    * Выбор дня недели:
-                                         - Пн - Вт - Ср - Чт - Пт
-
-                              - Звонки      ->      Текст расписания звонков
-
-                         */
-
-                        case "📋Расписание!📋":
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.TimeTable.ToString());
-
-                            await client.SendTextMessageAsync(
-                                chatId: msg.From.Id,
-                                text: "Какое расписание вы хотите?",
-                                replyMarkup: new ButtonGenerator().GetInlineButtons_TimeTable()
-                                );
-
-                            break;
-
-                        /*
-                         х6
-                         Предметы:
-                              - Предмет:
-                                    *Преподаватели -> Имена - Связь - 
-
-                         */
-
-
-                        case "📚Предметы!📚":
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.Lessons.ToString());
-
-                            await client.SendTextMessageAsync(
-                                chatId: msg.From.Id,
-                                text: "Выберите предмет:",
-                                replyMarkup: new ButtonGenerator().GetInlineButtons_Lessons());
-                            break;
-
-                        /*
-
-                        Ссылка на чат - "Вопрос-ответ" 
-
-                         */
-
-                        case "⁉️Вопрос-Ответ!⁉️":
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.QuesAnsw.ToString());
-
-                            await client.SendTextMessageAsync(
-                                chatId: msg.From.Id,
-                                text: "Держи!",
-                                replyMarkup: (InlineKeyboardMarkup)new ButtonGenerator().GetInlineButton_QuestionAnswe());
-                            break;
-
-
-                        /*
-                        х6
-                         Предметы:
-                              - Предмет:
-                                    *вид урока и ссылка в кнопке
-
-                         */
-
-                        case "💻Конференции!💻":
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.Conferences.ToString());
-
-                            await client.SendTextMessageAsync(
-                                chatId: msg.From.Id,
-                                text: "Выберите предмет:",
-                                replyMarkup: new ButtonGenerator().GetinlineKeyboard_Conf());
-
-                            break;
-
-
-                        /*
-
-                        Мой контакт 
-
-                         */
-
-                        case "📲Связь!📲":
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.Сommunication.ToString());
-
-                            await client.SendTextMessageAsync(msg.Chat.Id, File.ReadAllText(FileName.ComunicationAnswer));
-
-                            break;
-
-
-                        case "💰На Сервер!💰":
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.ToServer.ToString());
-
-                            await client.SendTextMessageAsync(msg.Chat.Id, FileName.DonateLink);
-                            await client.SendTextMessageAsync(msg.Chat.Id, "Или воспользуйтесь Qr-кодом для совершения доната, заранее спасибки🤗😌");
-                            await client.SendPhotoAsync(msg.Chat.Id, FileName.DonateQrCode);
-                            break;
-                        default:
-
-                            TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, msg.Text);
-
-                            break;
+                        await client.SendTextMessageAsync(
+                            chatId: msg.From.Id,
+                            text: selectedLang.TypeOfWeek[(int)Enumerate.TypeOfWeek.None], // selectedLang.TypeOfWeek[0]
+                            replyMarkup: new ButtonGenerator().GetInlineButtons_TimeTable(ref selectedLang));
                     }
+
+                    /*
+                     х6
+                     Предметы:
+                          - Предмет:
+                                *Преподаватели -> Имена - Связь - 
+
+                     */
+
+                    else if (msg.Text == selectedLang.LessonsBtn)
+                    {
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.Lessons.ToString());
+
+                        await client.SendTextMessageAsync(
+                            chatId: msg.From.Id,
+                            text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.None], // selectedLang.TypeOfLesson[0]
+                            replyMarkup: new ButtonGenerator().GetInlineButtons_Lessons(ref selectedLang));
+                    }
+
+                    /*
+
+                    Ссылка на чат - "Вопрос-ответ" 
+
+                     */
+
+                    else if (msg.Text == selectedLang.FAQBtn)
+                    {
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.QuesAnsw.ToString());
+
+                        await client.SendTextMessageAsync(
+                            chatId: msg.From.Id,
+                            text: selectedLang.FAQMsg,
+                            replyMarkup: (InlineKeyboardMarkup)new ButtonGenerator().GetInlineButton_QuestionAnswe(ref selectedLang));
+                    }
+
+                    /*
+                    х6
+                     Предметы:
+                          - Предмет:
+                                *вид урока и ссылка в кнопке
+
+                     */
+
+                    else if (msg.Text == selectedLang.ConferencesBtn)
+                    {
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.Conferences.ToString());
+
+                        await client.SendTextMessageAsync(
+                            chatId: msg.From.Id,
+                            text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.None], // selectedLang.TypeOfLesson[0]
+                            replyMarkup: new ButtonGenerator().GetinlineKeyboard_Conf(ref selectedLang));
+                    }
+
+                    /*
+
+                    Мой контакт 
+
+                     */
+
+                    else if (msg.Text == selectedLang.ConnectBtn)
+                    {
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.Сommunication.ToString());
+
+                        await client.SendTextMessageAsync(msg.Chat.Id, File.ReadAllText(FileName.MainDir + selectedLang.ComunicationAnswerFile));
+                    }
+
+                    else if (msg.Text == selectedLang.ServerBtn)
+                    {
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, TypeOfButton.ToServer.ToString());
+
+                        await client.SendTextMessageAsync(msg.Chat.Id, FileName.DonateLink);
+                        await client.SendTextMessageAsync(msg.Chat.Id, selectedLang.QRMsg);
+                        await client.SendPhotoAsync(msg.Chat.Id, FileName.DonateQrCode);
+                    }
+                    else
+                        TelegramBotLogger.PrintInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, msg.Text);
                 }
                 else
                     TelegramBotLogger.PrintBanInfo(e.Message.From.FirstName, e.Message.From.Id.ToString(), e.Message.From.Username, msg.Text);
@@ -264,7 +269,7 @@ namespace Tg_Bot
         [Obsolete]
         private void CallBackInlineQuaryMain(object sender, CallbackQueryEventArgs callBack)
         {
-            InlineData inlineData =  InlineData.Parse(callBack.CallbackQuery.Data);
+            InlineData inlineData = InlineData.Parse(callBack.CallbackQuery.Data);
 
             switch (inlineData.Button)
             {
@@ -303,15 +308,15 @@ namespace Tg_Bot
                 case Enumerate.TypeOfWeek.Numerator:
                     await client.SendTextMessageAsync(
                 chatId: callBack.CallbackQuery.From.Id,
-                text: "Выбери день недели:",
-                replyMarkup: new ButtonGenerator().GetinlineKeyboard_DayOfWeek(data));
+                text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.None], // selectedLang.TypeOfDay[0]
+                replyMarkup: new ButtonGenerator().GetinlineKeyboard_DayOfWeek(data, ref selectedLang));
                     break;
 
                 case Enumerate.TypeOfWeek.Denominator:
                     await client.SendTextMessageAsync(
                 chatId: callBack.CallbackQuery.From.Id,
-                text: "Выбери день недели:",
-                replyMarkup: new ButtonGenerator().GetinlineKeyboard_DayOfWeek(data));
+                text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.None], // selectedLang.TypeOfDay[0]
+                replyMarkup: new ButtonGenerator().GetinlineKeyboard_DayOfWeek(data, ref selectedLang));
                     break;
 
                 case Enumerate.TypeOfWeek.Call_:
@@ -372,11 +377,11 @@ namespace Tg_Bot
 
                 if (size_ == 0 || size_ == size)
                 {
-                    await client.SendTextMessageAsync(id, "Пока информации нету😅");
+                    await client.SendTextMessageAsync(id, selectedLang.LackOfInfo);
                 }
                 else
                 {
-                        await client.SendTextMessageAsync(id, File.ReadAllText(fileName));
+                    await client.SendTextMessageAsync(id, File.ReadAllText(fileName));
                 }
             }
         }

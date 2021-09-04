@@ -10,40 +10,54 @@ namespace Tg_Bot.ServiceClass
 {
     class ButtonGenerator
     {
-        public IReplyMarkup GetKeyBoardButtons() {
+        public IReplyMarkup GetKeyBoardButtons(ref SelectedLang selectedLang)
+        {
             return new ReplyKeyboardMarkup
             {
                 Keyboard = new List<List<KeyboardButton>>
                 {
-                    new List<KeyboardButton> { new KeyboardButton { Text = "📋Расписание!📋" } },
-                    new List<KeyboardButton> { new KeyboardButton { Text = "📚Предметы!📚" } /*, new KeyboardButton { Text = "💻Конференции!💻" }*/ },
-                    new List<KeyboardButton> { new KeyboardButton { Text = "⁉️Вопрос-Ответ!⁉️" } },
-                    new List<KeyboardButton> { new KeyboardButton { Text = "📲Связь!📲" } },
-                    new List<KeyboardButton> { new KeyboardButton { Text = "💰На Сервер!💰" } }
+                    new List<KeyboardButton> { new KeyboardButton { Text = selectedLang.TimetableBtn } },
+                    new List<KeyboardButton> { new KeyboardButton { Text = selectedLang.LessonsBtn } /*, new KeyboardButton { Text = "💻Конференции!💻" }*/ },
+                    new List<KeyboardButton> { new KeyboardButton { Text = selectedLang.FAQBtn } },
+                    new List<KeyboardButton> { new KeyboardButton { Text = selectedLang.ConnectBtn } },
+                    new List<KeyboardButton> { new KeyboardButton { Text = selectedLang.ServerBtn } }
                 }
             };
         }
 
-        public InlineKeyboardButton GetInlineButton_QuestionAnswe()
+        public IReplyMarkup GetLangKeyBoardButtons()
+        {
+            return new ReplyKeyboardMarkup
+            {
+                Keyboard = new List<List<KeyboardButton>>
+                {
+                    new List<KeyboardButton> { new KeyboardButton { Text = "🇺🇦Украинский!🇺🇦" } },
+                    new List<KeyboardButton> { new KeyboardButton { Text = "🇷🇺Русский!🇷🇺" } },
+                    new List<KeyboardButton> { new KeyboardButton { Text = "🇬🇧Английский!🇬🇧" } }
+                }
+            };
+        }
+
+        public InlineKeyboardButton GetInlineButton_QuestionAnswe(ref SelectedLang selectedLang)
         {
             InlineKeyboardButton button = new InlineKeyboardButton();
 
-            button.Text = "Чат для вопросов!";
+            button.Text = selectedLang.FAQurl;
             using (FileStream fstream = new FileStream(FileName.QuesAnsw, FileMode.Open))
-            using (StreamReader reader = new StreamReader(fstream)) 
-            button.Url = reader.ReadLine();
+            using (StreamReader reader = new StreamReader(fstream))
+                button.Url = reader.ReadLine();
 
             return button;
         }
 
-        public InlineKeyboardMarkup GetInlineButtons_TimeTable()
+        public InlineKeyboardMarkup GetInlineButtons_TimeTable(ref SelectedLang selectedLang)
         {
             return new InlineKeyboardMarkup(new[]
                             {
                         new[]
                         {
                             InlineKeyboardButton.WithCallbackData(
-                                text: "Расписание по числителю!",
+                                text: selectedLang.TypeOfWeek[(int)Enumerate.TypeOfWeek.Numerator], //selectedLang.TypeOfWeek[1]
                                 callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.TimeTable,
                             Week = Enumerate.TypeOfWeek.Numerator,
@@ -54,7 +68,7 @@ namespace Tg_Bot.ServiceClass
                         new[]
                         {
                             InlineKeyboardButton.WithCallbackData(
-                                text:"Расписание по знаменателю!",
+                                text: selectedLang.TypeOfWeek[(int)Enumerate.TypeOfWeek.Denominator], //selectedLang.TypeOfWeek[2]
                                 callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.TimeTable,
                             Week = Enumerate.TypeOfWeek.Denominator,
@@ -65,7 +79,7 @@ namespace Tg_Bot.ServiceClass
                         new[]
                         {
                             InlineKeyboardButton.WithCallbackData(
-                                text: "Расписание звонков!", 
+                                text: selectedLang.TypeOfWeek[(int)Enumerate.TypeOfWeek.Call_], //selectedLang.TypeOfWeek[3]
                                 callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.TimeTable,
                             Week = Enumerate.TypeOfWeek.Call_,
@@ -76,14 +90,14 @@ namespace Tg_Bot.ServiceClass
                      });
         }
 
-        public InlineKeyboardMarkup GetInlineButtons_Lessons()
+        public InlineKeyboardMarkup GetInlineButtons_Lessons(ref SelectedLang selectedLang)
         {
             return new InlineKeyboardMarkup(new[]
                             {
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "АиСД!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.ASD], //selectedLang.TypeOfLesson[1]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Lessons,
                             Week = Enumerate.TypeOfWeek.None,
@@ -92,7 +106,7 @@ namespace Tg_Bot.ServiceClass
                             }.Crypt()
                                     ),
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "ВМ!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.VM], //selectedLang.TypeOfLesson[2]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Lessons,
                             Week = Enumerate.TypeOfWeek.None,
@@ -103,7 +117,7 @@ namespace Tg_Bot.ServiceClass
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "Л-МВ!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.LMV], //selectedLang.TypeOfLesson[3]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Lessons,
                             Week = Enumerate.TypeOfWeek.None,
@@ -111,7 +125,7 @@ namespace Tg_Bot.ServiceClass
                             Lesson = Enumerate.TypeOfLesson.LMV
                             }.Crypt()),
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "ОПИ",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.OPI], //selectedLang.TypeOfLesson[4]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Lessons,
                             Week = Enumerate.TypeOfWeek.None,
@@ -122,7 +136,7 @@ namespace Tg_Bot.ServiceClass
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "Теор Вер",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.TV], //selectedLang.TypeOfLesson[5]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Lessons,
                             Week = Enumerate.TypeOfWeek.None,
@@ -134,14 +148,14 @@ namespace Tg_Bot.ServiceClass
                         });
         }
 
-        public InlineKeyboardMarkup GetinlineKeyboard_Conf()
+        public InlineKeyboardMarkup GetinlineKeyboard_Conf(ref SelectedLang selectedLang)
         {
             return new InlineKeyboardMarkup(new[]
                             {
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "АиСД!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.ASD], //selectedLang.TypeOfLesson[1]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Conferences,
                             Week = Enumerate.TypeOfWeek.None,
@@ -149,7 +163,7 @@ namespace Tg_Bot.ServiceClass
                             Lesson = Enumerate.TypeOfLesson.ASD
                                 }.Crypt()),
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "ВМ!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.VM], //selectedLang.TypeOfLesson[2]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Conferences,
                             Week = Enumerate.TypeOfWeek.None,
@@ -160,7 +174,7 @@ namespace Tg_Bot.ServiceClass
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "Л-МВ!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.LMV], //selectedLang.TypeOfLesson[3]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Conferences,
                             Week = Enumerate.TypeOfWeek.None,
@@ -168,7 +182,7 @@ namespace Tg_Bot.ServiceClass
                             Lesson = Enumerate.TypeOfLesson.LMV
                                 }.Crypt()),
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "ОПИ!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.OPI], //selectedLang.TypeOfLesson[4]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Conferences,
                             Week = Enumerate.TypeOfWeek.None,
@@ -179,7 +193,7 @@ namespace Tg_Bot.ServiceClass
                             new[]
                             {
                                 InlineKeyboardButton.WithCallbackData(
-                                    text: "Теор Вер!",
+                                    text: selectedLang.TypeOfLesson[(int)Enumerate.TypeOfLesson.TV], //selectedLang.TypeOfLesson[5]
                                     callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.Conferences,
                             Week = Enumerate.TypeOfWeek.None,
@@ -190,14 +204,14 @@ namespace Tg_Bot.ServiceClass
                             });
         }
 
-        public InlineKeyboardMarkup GetinlineKeyboard_DayOfWeek(InlineData data)
+        public InlineKeyboardMarkup GetinlineKeyboard_DayOfWeek(InlineData data, ref SelectedLang selectedLang)
         {
             return new InlineKeyboardMarkup(new[]
             {
             new[]
                 {
                     InlineKeyboardButton.WithCallbackData(
-                        text: "Пн", 
+                        text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.Monday], //selectedLang.TypeOfDay[1]
                         callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.DayOfWeek,
                             Week = data.Week,
@@ -205,7 +219,7 @@ namespace Tg_Bot.ServiceClass
                             Lesson = Enumerate.TypeOfLesson.None
                                 }.Crypt()), //for read from (for example NumeratorMonday.txt)
                     InlineKeyboardButton.WithCallbackData(
-                        text: "Вт",
+                        text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.Tuesday], //selectedLang.TypeOfDay[2]
                         callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.DayOfWeek,
                             Week = data.Week,
@@ -216,7 +230,7 @@ namespace Tg_Bot.ServiceClass
                 new[]
                 {
                     InlineKeyboardButton.WithCallbackData(
-                        text: "Ср",
+                        text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.Wednesday], //selectedLang.TypeOfDay[3]
                         callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.DayOfWeek,
                             Week = data.Week,
@@ -224,7 +238,7 @@ namespace Tg_Bot.ServiceClass
                             Lesson = Enumerate.TypeOfLesson.None
                                 }.Crypt()),
                     InlineKeyboardButton.WithCallbackData(
-                        text: "Чт", 
+                        text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.Thursday], //selectedLang.TypeOfDay[4]
                         callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.DayOfWeek,
                             Week = data.Week,
@@ -235,7 +249,7 @@ namespace Tg_Bot.ServiceClass
                   new[]
                 {
                     InlineKeyboardButton.WithCallbackData(
-                        text: "Пт", 
+                        text: selectedLang.TypeOfDay[(int)Enumerate.TypeOfDay.Friday], //selectedLang.TypeOfDay[5]
                         callbackData: new InlineData(){
                             Button = Enumerate.TypeOfButton.DayOfWeek,
                             Week = data.Week,

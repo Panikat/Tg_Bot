@@ -15,8 +15,11 @@ namespace Tg_Bot.ServiceClass
         
         public static string Token { get; } = MainDir + @"token.txt";
         public static string DBName { get; } = MainDir + @"db.db";
-        public static string ComunicationAnswer { get; } = MainDir + @"Communication.txt";
-        public static string Welcome_text { get; } = MainDir + @"Welcome.txt";
+        public static string UAfile { get; } = MainDir + @"ua.json";
+        public static string RUfile { get; } = MainDir + @"ru.json";
+        public static string ENfile { get; } = MainDir + @"en.json";
+        //public static string ComunicationAnswer { get; } = MainDir + @"Communication.txt";
+        //public static string Welcome_text { get; } = MainDir + @"Welcome.txt";
         public static string QuesAnsw { get; } = MainDir + @"QuesAnsw.txt";
         public static string TimeTable { get; } = @"https://github.com/maxpe3447/Tg_Bot/blob/develop/Tg_Bot/Image/CallBoard.jpg?raw=true";
         public static string DonateLink { get; } = @"https://send.monobank.ua/jar/2Toamtu3qm";
